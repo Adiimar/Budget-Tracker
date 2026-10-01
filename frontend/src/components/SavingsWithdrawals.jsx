@@ -22,7 +22,7 @@ const SavingsWithdrawals = ({ savings, onSavingsChanged }) => {
   };
 
   return (
-    <div className="bg-zinc-900 rounded-3xl border border-zinc-800 p-6">
+    <div className="glass-card rounded-3xl border p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-bold">Paid from Savings</h2>

@@ -95,7 +95,7 @@ const SavingsSection = ({ savings, remaining, onSavingsChanged }) => {
   };
 
   return (
-    <div className="bg-zinc-900 rounded-3xl border border-zinc-800 p-6">
+    <div className="glass-card rounded-3xl border p-6">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 className="text-lg font-bold">Savings</h2>
         {!showForm && (

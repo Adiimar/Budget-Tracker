@@ -2,7 +2,7 @@ import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { formatCurrency } from '../utils/currency';
 
-const Charts = ({ expenses }) => {
+const Charts = ({ expenses, view = 'all', compact = false }) => {
   const categoryData = expenses.reduce((acc, expense) => {
     const existing = acc.find((item) => item.name === expense.category);
     if (existing) {
@@ -63,17 +63,20 @@ const Charts = ({ expenses }) => {
     );
   };
 
+  const showCategory = view === 'all' || view === 'category';
+  const showTrend = (view === 'all' || view === 'trend') && dateData.length > 0;
+
   return (
-    <div className="space-y-6">
-      <div>
+    <div className={`grid grid-cols-1 ${view === 'all' ? 'xl:grid-cols-2' : ''} gap-8`}>
+      {showCategory && <div>
         <h3 className="font-semibold text-sm mb-4 text-zinc-400">Spending by Category</h3>
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={compact ? 190 : 280}>
           <PieChart>
             <Pie
               data={categoryData}
               cx="50%"
               cy="45%"
-              outerRadius={80}
+              outerRadius={compact ? 65 : 80}
               fill="#93c5fd"
               dataKey="value"
               stroke="#09090b"
@@ -92,12 +95,12 @@ const Charts = ({ expenses }) => {
             <Legend content={renderLegend} verticalAlign="bottom" />
           </PieChart>
         </ResponsiveContainer>
-      </div>
+      </div>}
 
-      {dateData.length > 0 && (
+      {showTrend && (
         <div>
           <h3 className="font-semibold text-sm mb-4 text-zinc-400">Spending Trend</h3>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={compact ? 190 : 250}>
             <LineChart data={dateData}>
               <defs>
                 <linearGradient id="lineGlow" x1="0" y1="0" x2="0" y2="1">
