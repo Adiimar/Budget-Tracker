@@ -39,14 +39,19 @@ public class BudgetController {
     @PutMapping("/{id}")
     public ResponseEntity<BudgetResponse> updateBudget(
             @PathVariable Long id,
-            @Valid @RequestBody BudgetRequest request) {
-        BudgetResponse response = budgetService.updateBudget(id, request);
+            @Valid @RequestBody BudgetRequest request,
+            @RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+        BudgetResponse response = budgetService.updateBudget(id, userId, request);
         return ResponseEntity.ok(response);
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBudget(@PathVariable Long id) {
-        budgetService.deleteBudget(id);
+    public ResponseEntity<Void> deleteBudget(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+        budgetService.deleteBudget(id, userId);
         return ResponseEntity.noContent().build();
     }
     

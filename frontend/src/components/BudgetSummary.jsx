@@ -72,7 +72,7 @@ const BudgetSummary = ({ budgets, onBudgetDeleted, showOverview = true, showAddB
   };
 
   const inputClasses =
-    'w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 text-sm transition-all';
+    'min-h-11 w-full min-w-0 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 text-sm transition-all';
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -82,8 +82,8 @@ const BudgetSummary = ({ budgets, onBudgetDeleted, showOverview = true, showAddB
   return (
     <>
       {showOverview && (
-        <section className="glass-card rounded-3xl border p-6">
-        <div className="flex items-center justify-between gap-3">
+        <section className="glass-card rounded-3xl border p-4 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
             <h2 className="text-lg font-bold">Budget Overview</h2>
             <p className="text-zinc-500 text-sm mt-1">
@@ -95,7 +95,7 @@ const BudgetSummary = ({ budgets, onBudgetDeleted, showOverview = true, showAddB
             onClick={() => setIsExpanded((expanded) => !expanded)}
             aria-expanded={isExpanded}
             aria-controls="budget-list"
-            className="shrink-0 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-300 transition-colors"
+            className="min-h-11 shrink-0 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-300 transition-colors"
           >
             {isExpanded ? 'Hide budgets' : 'Show budgets'}
           </button>
@@ -122,7 +122,7 @@ const BudgetSummary = ({ budgets, onBudgetDeleted, showOverview = true, showAddB
             const barColor = isOverBudget ? 'bg-red-500' : 'bg-emerald-600';
 
             return (
-              <div key={budget.id} className="mb-3 p-4 bg-zinc-950/60 rounded-2xl border border-zinc-800">
+              <div key={budget.id} className="mb-3 p-3 sm:p-4 bg-zinc-950/60 rounded-2xl border border-zinc-800">
                 <div className="flex justify-between items-start mb-2.5">
                   <div>
                     <p className="font-semibold text-white text-sm">{budget.category}</p>
@@ -164,7 +164,7 @@ const BudgetSummary = ({ budgets, onBudgetDeleted, showOverview = true, showAddB
       )}
 
       {showAddBudget && (
-        <section className="glass-card rounded-3xl border p-6">
+        <section className="glass-card rounded-3xl border p-4 sm:p-6">
           <button
             type="button"
             onClick={() => setShowForm((visible) => !visible)}
@@ -187,7 +187,7 @@ const BudgetSummary = ({ budgets, onBudgetDeleted, showOverview = true, showAddB
             )}
           </button>
         {showForm && (
-          <form onSubmit={handleSubmit} className="mt-5 space-y-3 bg-zinc-950/60 p-4 rounded-2xl border border-zinc-800">
+          <form onSubmit={handleSubmit} className="mt-4 sm:mt-5 space-y-3 bg-zinc-950/60 p-3 sm:p-4 rounded-2xl border border-zinc-800">
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-3 py-2 rounded-lg text-xs">
                 {error}
@@ -241,7 +241,7 @@ const BudgetSummary = ({ budgets, onBudgetDeleted, showOverview = true, showAddB
               className={inputClasses}
               required
             />
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-2">
               <div>
                 <label className="block text-zinc-500 text-xs font-medium mb-1">Start date</label>
                 <input

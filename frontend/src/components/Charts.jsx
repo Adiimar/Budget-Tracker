@@ -109,8 +109,17 @@ const Charts = ({ expenses, view = 'all', compact = false }) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-              <XAxis dataKey="date" angle={-45} textAnchor="end" height={80} stroke="#71717a" fontSize={12} />
-              <YAxis stroke="#71717a" fontSize={12} />
+              <XAxis
+                dataKey="date"
+                angle={compact ? -35 : -45}
+                textAnchor="end"
+                height={compact ? 60 : 80}
+                interval="preserveStartEnd"
+                minTickGap={compact ? 18 : 24}
+                stroke="#71717a"
+                fontSize={compact ? 10 : 12}
+              />
+              <YAxis stroke="#71717a" fontSize={compact ? 10 : 12} width={compact ? 38 : 48} />
               <Tooltip
                 formatter={(value) => formatCurrency(value)}
                 contentStyle={tooltipStyle}

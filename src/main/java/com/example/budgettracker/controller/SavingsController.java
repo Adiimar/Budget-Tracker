@@ -47,8 +47,11 @@ public class SavingsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSaving(@PathVariable Long id) {
-        savingsService.deleteSaving(id);
+    public ResponseEntity<Void> deleteSaving(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+        savingsService.deleteSaving(id, userId);
         return ResponseEntity.noContent().build();
     }
 

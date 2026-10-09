@@ -22,8 +22,8 @@ const SavingsWithdrawals = ({ savings, onSavingsChanged }) => {
   };
 
   return (
-    <div className="glass-card rounded-3xl border p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="glass-card rounded-3xl border p-4 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
         <div>
           <h2 className="text-lg font-bold">Paid from Savings</h2>
           <p className="text-zinc-500 text-sm mt-0.5">Expenses deducted from your savings</p>
@@ -38,7 +38,7 @@ const SavingsWithdrawals = ({ savings, onSavingsChanged }) => {
         {withdrawals.map((s) => (
           <div
             key={s.id}
-            className="bg-zinc-950/60 border border-zinc-800 rounded-2xl px-4 py-3 flex items-center justify-between gap-3"
+            className="bg-zinc-950/60 border border-zinc-800 rounded-2xl px-3 sm:px-4 py-3 flex items-start sm:items-center justify-between gap-2 sm:gap-3"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-2.5 shrink-0">
@@ -53,14 +53,14 @@ const SavingsWithdrawals = ({ savings, onSavingsChanged }) => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <div className="text-right">
                 <p className="font-bold text-red-400">-{formatCurrency(parseFloat(s.amount || 0))}</p>
                 <p className="text-zinc-600 text-xs">{new Date(s.date).toLocaleDateString()}</p>
               </div>
               <button
                 onClick={() => handleDelete(s.id)}
-                className="text-zinc-600 hover:text-red-400 transition-colors"
+                className="min-w-10 min-h-10 flex items-center justify-center text-zinc-600 hover:text-red-400 transition-colors"
                 aria-label="Delete withdrawal"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

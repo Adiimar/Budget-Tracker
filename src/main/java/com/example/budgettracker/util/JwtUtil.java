@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     
-    @Value("${jwt.secret:MySecretKeyForBudgetTrackerApplicationJwtTokenGenerationAndValidation}")
+    @Value("${jwt.secret}")
     private String secret;
     
     @Value("${jwt.expiration:86400000}")

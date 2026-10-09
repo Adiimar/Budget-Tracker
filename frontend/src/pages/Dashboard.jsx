@@ -115,7 +115,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-zinc-950 text-white">
       {/* Header */}
       <header className="border-b border-zinc-900 sticky top-0 z-10 bg-zinc-950/80 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-2.5 shadow-lg shadow-emerald-500/20">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -128,8 +128,8 @@ const Dashboard = () => {
               <p className="text-zinc-500 text-sm">Welcome back, {userName}</p>
             </div>
           </div>
-          <div className="flex items-center justify-between gap-3 sm:justify-end">
-            <nav aria-label="Main navigation" className="flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900 p-1">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+            <nav aria-label="Main navigation" className="grid w-full grid-cols-3 gap-1 rounded-xl border border-zinc-800 bg-zinc-900 p-1 sm:w-auto">
               {[
                 { id: 'dashboard', label: 'Dashboard' },
                 { id: 'transactions', label: 'Transactions' },
@@ -140,7 +140,7 @@ const Dashboard = () => {
                   type="button"
                   onClick={() => setActiveView(item.id)}
                   aria-current={activeView === item.id ? 'page' : undefined}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`min-h-11 rounded-lg px-2 sm:px-3 text-xs sm:text-sm font-medium transition-colors ${
                     activeView === item.id
                       ? 'bg-emerald-600 text-white shadow-sm'
                       : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
@@ -152,7 +152,7 @@ const Dashboard = () => {
             </nav>
             <button
               onClick={handleLogout}
-              className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-medium py-2 px-3 sm:px-4 rounded-xl transition-colors duration-150 flex items-center gap-2 text-sm"
+              className="min-h-11 self-end sm:self-auto bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-medium py-2 px-3 sm:px-4 rounded-xl transition-colors duration-150 flex items-center gap-2 text-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -166,42 +166,42 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-5 sm:py-8">
         {activeView === 'dashboard' ? (
           <>
         {/* Hero balance card */}
-        <div className="glass-card rounded-3xl border p-6 sm:p-8 mb-6">
+        <div className="glass-card rounded-3xl border p-4 sm:p-8 mb-5 sm:mb-6">
           <p className="text-zinc-400 text-sm font-medium">Remaining</p>
           <p
-            className={`text-4xl sm:text-5xl font-bold mt-1 tracking-tight ${
+            className={`text-3xl sm:text-5xl font-bold mt-1 tracking-tight break-words ${
               remaining < 0 ? 'text-red-400' : 'text-emerald-400'
             }`}
           >
             {formatCurrency(remaining)}
           </p>
-          <div className="flex flex-wrap gap-3 mt-6">
-            <div className="glass-tile border rounded-2xl px-4 py-3 flex-1 min-w-[140px]">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mt-5 sm:mt-6">
+            <div className="glass-tile border rounded-2xl px-3 sm:px-4 py-3">
               <p className="text-zinc-500 text-xs font-medium">Total Budget</p>
-              <p className="text-lg font-bold mt-0.5">{formatCurrency(totalBudget)}</p>
+              <p className="text-sm sm:text-lg font-bold mt-0.5 break-words">{formatCurrency(totalBudget)}</p>
             </div>
-            <div className="glass-tile border rounded-2xl px-4 py-3 flex-1 min-w-[140px]">
+            <div className="glass-tile border rounded-2xl px-3 sm:px-4 py-3">
               <p className="text-zinc-500 text-xs font-medium">Total Spent</p>
-              <p className="text-lg font-bold mt-0.5">{formatCurrency(totalSpent)}</p>
+              <p className="text-sm sm:text-lg font-bold mt-0.5 break-words">{formatCurrency(totalSpent)}</p>
             </div>
-            <div className="glass-tile border rounded-2xl px-4 py-3 flex-1 min-w-[140px]">
+            <div className="glass-tile border rounded-2xl px-3 sm:px-4 py-3">
               <p className="text-zinc-500 text-xs font-medium">Expenses Logged</p>
-              <p className="text-lg font-bold mt-0.5">{expenses.length}</p>
+              <p className="text-sm sm:text-lg font-bold mt-0.5">{expenses.length}</p>
             </div>
-            <div className="glass-tile border rounded-2xl px-4 py-3 flex-1 min-w-[140px]">
+            <div className="glass-tile border rounded-2xl px-3 sm:px-4 py-3">
               <p className="text-zinc-500 text-xs font-medium">Savings</p>
-              <p className="text-lg font-bold mt-0.5">{formatCurrency(totalSavings)}</p>
+              <p className="text-sm sm:text-lg font-bold mt-0.5 break-words">{formatCurrency(totalSavings)}</p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-5 sm:mb-6">
           {/* Add Expense Section */}
-          <div className="glass-card rounded-3xl border p-6">
+          <div className="glass-card rounded-3xl border p-4 sm:p-6">
             <button
               onClick={() => setShowExpenseForm(!showExpenseForm)}
               className={`w-full font-semibold py-3 px-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 ${
@@ -239,7 +239,7 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Transactions */}
-        <div className="glass-card rounded-3xl border p-6">
+        <div className="glass-card rounded-3xl border p-4 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
               <h2 className="text-lg font-bold">Recent Transactions</h2>
@@ -273,14 +273,14 @@ const Dashboard = () => {
           </>
         ) : activeView === 'savings' ? (
           <>
-            <div className="glass-card rounded-3xl border p-6 sm:p-8 mb-6 flex flex-wrap items-end justify-between gap-5">
+            <div className="glass-card rounded-3xl border p-4 sm:p-8 mb-5 sm:mb-6 flex flex-wrap items-end justify-between gap-4 sm:gap-5">
               <div>
                 <p className="text-zinc-400 text-sm font-medium">Total Savings</p>
-                <p className="text-4xl sm:text-5xl font-bold mt-1 tracking-tight text-blue-400">
+                <p className="text-3xl sm:text-5xl font-bold mt-1 tracking-tight text-blue-400 break-words">
                   {formatCurrency(totalSavings)}
                 </p>
               </div>
-              <div className="glass-tile border rounded-2xl px-4 py-3 min-w-[180px]">
+              <div className="glass-tile border rounded-2xl px-4 py-3 w-full sm:w-auto sm:min-w-[180px]">
                 <p className="text-zinc-500 text-xs font-medium">Available to save</p>
                 <p className={`text-lg font-bold mt-0.5 ${remaining < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
                   {formatCurrency(remaining)}
@@ -288,12 +288,12 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+              <div className="xl:col-span-2 space-y-4 sm:space-y-6">
                 <SavingsSection savings={savings} remaining={remaining} onSavingsChanged={fetchData} />
                 <SavingsWithdrawals savings={savings} onSavingsChanged={fetchData} />
               </div>
-              <div className="glass-card rounded-3xl border p-6">
+              <div className="glass-card rounded-3xl border p-4 sm:p-6">
                 <h2 className="text-lg font-bold mb-4 text-blue-400">Savings Trend</h2>
                 <SavingsChart savings={savings} />
               </div>
@@ -309,7 +309,7 @@ const Dashboard = () => {
               />
             </div>
             {expenses.length > 0 && (
-              <section className="glass-card rounded-3xl border p-5 sm:p-6 mb-6">
+              <section className="glass-card rounded-3xl border p-4 sm:p-6 mb-5 sm:mb-6">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
                   <div>
                     <h2 className="text-lg font-bold">Statistics</h2>
@@ -344,11 +344,11 @@ const Dashboard = () => {
                 <Charts expenses={expenses} view={statisticsView} compact />
               </section>
             )}
-            <div className="glass-card rounded-3xl border p-6 sm:p-8 mb-6">
+            <div className="glass-card rounded-3xl border p-4 sm:p-8 mb-5 sm:mb-6">
               <div className="flex flex-wrap items-end justify-between gap-5">
                 <div>
                   <p className="text-zinc-400 text-sm font-medium">Transaction history</p>
-                  <h2 className="text-3xl font-bold mt-1">All transactions</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold mt-1">All transactions</h2>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="text-right">
@@ -363,15 +363,15 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <section className="glass-card rounded-3xl border p-6">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <section className="glass-card rounded-3xl border p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
                 <div>
                   <h2 className="text-lg font-bold">Browse transactions</h2>
                   <p className="text-zinc-500 text-sm mt-0.5">
                     {showAllTransactions ? 'Grouped by month, newest first' : `Latest ${Math.min(filteredExpenses.length, 5)} of ${filteredExpenses.length}, newest first`}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex w-full sm:w-auto items-center gap-2">
                   <div className="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -384,13 +384,13 @@ const Dashboard = () => {
                       aria-label="Filter transactions by date"
                       value={filterDate}
                       onChange={(e) => setFilterDate(e.target.value)}
-                      className="pl-9 pr-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all [color-scheme:dark]"
+                      className="min-h-11 w-full sm:w-auto min-w-0 pl-9 pr-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all [color-scheme:dark]"
                     />
                   </div>
                   {filterDate && (
                     <button
                       onClick={() => setFilterDate('')}
-                      className="text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 px-3 py-2 rounded-xl transition-colors"
+                      className="min-h-11 shrink-0 text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 px-3 py-2 rounded-xl transition-colors"
                     >
                       Clear
                     </button>

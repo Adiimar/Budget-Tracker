@@ -64,8 +64,10 @@ public class SavingsService {
         return savingsRepository.getTotalSavingsByUser(userId);
     }
 
-    public void deleteSaving(Long savingId) {
-        savingsRepository.deleteById(savingId);
+    public void deleteSaving(Long savingId, Long userId) {
+        Savings saving = savingsRepository.findByIdAndUserId(savingId, userId)
+                .orElseThrow(() -> new RuntimeException("Savings entry not found"));
+        savingsRepository.delete(saving);
     }
 
     private SavingsResponse convertToResponse(Savings saving) {

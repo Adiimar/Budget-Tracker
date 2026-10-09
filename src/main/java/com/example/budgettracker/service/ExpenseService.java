@@ -65,13 +65,15 @@ public class ExpenseService {
                 .collect(Collectors.toList());
     }
 
-    public ExpenseResponse getExpenseById(Long expenseId) {
-        Expense expense = expenseRepository.findById(expenseId).orElseThrow(() -> new RuntimeException("Expense not found"));
+    public ExpenseResponse getExpenseById(Long expenseId, Long userId) {
+        Expense expense = expenseRepository.findByIdAndUserId(expenseId, userId)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
         return convertToResponse(expense);
     }
 
-    public ExpenseResponse updateExpense(Long expenseId, ExpenseRequest request) {
-        Expense expense = expenseRepository.findById(expenseId).orElseThrow(() -> new RuntimeException("Expense not found"));
+    public ExpenseResponse updateExpense(Long expenseId, Long userId, ExpenseRequest request) {
+        Expense expense = expenseRepository.findByIdAndUserId(expenseId, userId)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
 
         expense.setAmount(request.getAmount());
         expense.setCategory(request.getCategory());
@@ -82,8 +84,10 @@ public class ExpenseService {
         return convertToResponse(updatedExpense);
     }
 
-    public void deleteExpense(Long expenseId) {
-        expenseRepository.deleteById(expenseId);
+    public void deleteExpense(Long expenseId, Long userId) {
+        Expense expense = expenseRepository.findByIdAndUserId(expenseId, userId)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
+        expenseRepository.delete(expense);
     }
 
     public List<ExpenseResponse> getExpensesByDateRange(Long userId, LocalDate startDate, LocalDate endDate) {

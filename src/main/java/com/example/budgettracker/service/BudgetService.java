@@ -42,8 +42,9 @@ public class BudgetService {
                 .collect(Collectors.toList());
     }
     
-    public BudgetResponse updateBudget(Long budgetId, BudgetRequest request) {
-        Budget budget = budgetRepository.findById(budgetId).orElseThrow(() -> new RuntimeException("Budget not found"));
+    public BudgetResponse updateBudget(Long budgetId, Long userId, BudgetRequest request) {
+        Budget budget = budgetRepository.findByIdAndUserId(budgetId, userId)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
         
         budget.setCategory(request.getCategory());
         budget.setLimitAmount(request.getLimitAmount());
@@ -54,8 +55,10 @@ public class BudgetService {
         return convertToResponse(updatedBudget, budget.getUser().getId());
     }
     
-    public void deleteBudget(Long budgetId) {
-        budgetRepository.deleteById(budgetId);
+    public void deleteBudget(Long budgetId, Long userId) {
+        Budget budget = budgetRepository.findByIdAndUserId(budgetId, userId)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+        budgetRepository.delete(budget);
     }
     
     private BudgetResponse convertToResponse(Budget budget, Long userId) {

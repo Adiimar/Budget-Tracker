@@ -1,0 +1,59 @@
+databases:
+  - name: budget-tracker-db
+    databaseName: budget_tracker
+    user: budget_tracker
+    plan: free
+    region: oregon
+
+services:
+  - type: web
+    name: budget-tracker-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: JWT_SECRET
+        generateValue: true
+      - key: APP_CORS_ALLOWED_ORIGINS
+        value: https://budget-tracker-web.onrender.com
+      - key: DB_HOST
+        fromDatabase:
+          name: budget-tracker-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: budget-tracker-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: budget-tracker-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: budget-tracker-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: budget-tracker-db
+          property: password
+
+  - type: web
+    name: budget-tracker-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_HOST
+        fromService:
+          name: budget-tracker-api
+          type: web
+          property: host
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

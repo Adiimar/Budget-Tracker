@@ -38,22 +38,30 @@ public class ExpenseController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<ExpenseResponse> getExpenseById(@PathVariable Long id) {
-        ExpenseResponse expense = expenseService.getExpenseById(id);
+    public ResponseEntity<ExpenseResponse> getExpenseById(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+        ExpenseResponse expense = expenseService.getExpenseById(id, userId);
         return ResponseEntity.ok(expense);
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<ExpenseResponse> updateExpense(
             @PathVariable Long id,
-            @Valid @RequestBody ExpenseRequest request) {
-        ExpenseResponse response = expenseService.updateExpense(id, request);
+            @Valid @RequestBody ExpenseRequest request,
+            @RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+        ExpenseResponse response = expenseService.updateExpense(id, userId, request);
         return ResponseEntity.ok(response);
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
-        expenseService.deleteExpense(id);
+    public ResponseEntity<Void> deleteExpense(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+        expenseService.deleteExpense(id, userId);
         return ResponseEntity.noContent().build();
     }
     

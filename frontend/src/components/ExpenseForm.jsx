@@ -84,7 +84,7 @@ const ExpenseForm = ({ onExpenseAdded }) => {
   };
 
   const inputClasses =
-    'w-full px-3 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all';
+    'min-h-11 w-full min-w-0 px-3 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -159,7 +159,7 @@ const ExpenseForm = ({ onExpenseAdded }) => {
           <button
             type="button"
             onClick={() => handleSourceChange('BALANCE')}
-            className={`py-2.5 px-3 rounded-xl text-sm font-semibold transition-all border ${
+            className={`min-h-11 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all border ${
               formData.source === 'BALANCE'
                 ? 'bg-emerald-500/15 border-emerald-500 text-emerald-400'
                 : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
@@ -170,7 +170,7 @@ const ExpenseForm = ({ onExpenseAdded }) => {
           <button
             type="button"
             onClick={() => handleSourceChange('SAVINGS')}
-            className={`py-2.5 px-3 rounded-xl text-sm font-semibold transition-all border ${
+            className={`min-h-11 py-2.5 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all border ${
               formData.source === 'SAVINGS'
                 ? 'bg-blue-500/15 border-blue-500 text-blue-400'
                 : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
