@@ -42,14 +42,14 @@ const Login = () => {
   };
 
   const inputClasses =
-    'min-h-11 w-full min-w-0 px-3 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 transition-all';
+    'min-h-11 w-full min-w-0 px-3 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all';
 
   return (
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(500px,120vw)] h-[min(500px,120vw)] bg-orange-500/10 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(500px,120vw)] h-[min(500px,120vw)] bg-emerald-500/10 rounded-full blur-3xl" />
       <div className="relative bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-800 p-5 sm:p-8 w-full max-w-md">
         <div className="flex justify-center mb-4">
-          <div className="bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl p-3 shadow-lg shadow-orange-500/20">
+          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-3 shadow-lg shadow-emerald-500/20">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="1" x2="12" y2="23" />
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -93,7 +93,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2"
+            className="min-h-11 w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
           >
             {loading && <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
             {loading ? 'Logging in...' : 'Login'}
@@ -102,7 +102,7 @@ const Login = () => {
 
         <p className="text-center text-zinc-500 mt-6 text-sm">
           Don't have an account?{' '}
-          <a href="/register" className="text-orange-400 hover:text-orange-300 font-semibold">
+          <a href="/register" className="text-emerald-400 hover:text-emerald-300 font-semibold">
             Register
           </a>
         </p>
