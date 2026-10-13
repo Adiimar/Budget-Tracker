@@ -16,4 +16,5 @@ public interface SavingsRepository extends JpaRepository<Savings, Long> {
 
     @Query("SELECT COALESCE(SUM(CASE WHEN s.type = 'WITHDRAWAL' THEN -s.amount ELSE s.amount END), 0) FROM Savings s WHERE s.user.id = :userId")
     BigDecimal getTotalSavingsByUser(@Param("userId") Long userId);
+
 }

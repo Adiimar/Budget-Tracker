@@ -31,7 +31,7 @@ public class Savings {
     @Column(nullable = false)
     private String destination;
 
-    // BANK, EWALLET, or CUSTOM - used by the frontend to pick an icon/color
+    // BANK, EWALLET, MARIBANK, or CUSTOM - used by the frontend to pick an icon/color
     @NotBlank(message = "Destination type is required")
     @Column(name = "destination_type", nullable = false)
     private String destinationType;

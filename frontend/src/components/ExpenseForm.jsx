@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { expenseAPI } from '../api/api';
 import { SAVINGS_PRESETS } from '../utils/SavingsDestination';
 
-const ExpenseForm = ({ onExpenseAdded }) => {
+const ExpenseForm = ({ onExpenseAdded, savingsBalanceByDestination }) => {
   const [formData, setFormData] = useState({
     amount: '',
     category: 'Food',
@@ -59,6 +59,15 @@ const ExpenseForm = ({ onExpenseAdded }) => {
     if (formData.source === 'SAVINGS' && !formData.savingsDestination) {
       setError('Please choose which savings destination to deduct from');
       return;
+    }
+
+    const preset = SAVINGS_PRESETS.find((item) => item.name === formData.savingsDestination);
+    if (formData.source === 'SAVINGS' && preset && preset.type !== 'CUSTOM') {
+      const availableBalance = savingsBalanceByDestination[formData.savingsDestination] || 0;
+      if (Number(formData.amount) > availableBalance) {
+        setError(`Insufficient savings in ${formData.savingsDestination}. Available balance: ₱${availableBalance.toFixed(2)}`);
+        return;
+      }
     }
 
     setLoading(true);
@@ -192,7 +201,7 @@ const ExpenseForm = ({ onExpenseAdded }) => {
                 <option value="" disabled>Which savings account?</option>
                 {SAVINGS_PRESETS.map((p) => (
                   <option key={p.name} value={p.name}>
-                    {p.name} ({p.type === 'BANK' ? 'Bank' : 'E-wallet'})
+                    {p.name} ({p.type === 'EWALLET' ? 'E-wallet' : 'Bank'})
                   </option>
                 ))}
                 <option value="__custom__">+ Custom destination...</option>

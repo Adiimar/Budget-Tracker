@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { expenseAPI, budgetAPI, savingAPI } from '../api/api';
+import { expenseAPI, budgetAPI, savingAPI, subscriptionAPI } from '../api/api';
 import ExpenseForm from '../components/ExpenseForm';
 import ExpenseList from '../components/ExpenseList';
 import BudgetSummary from '../components/BudgetSummary';
@@ -9,12 +9,18 @@ import SavingsSection from '../components/SavingsSection';
 import SavingsChart from '../components/SavingsChart';
 import { formatCurrency } from '../utils/currency';
 import SavingsWithdrawals from '../components/SavingsWithdrawals';
+import { SAVINGS_PRESETS } from '../utils/SavingsDestination';
+import SubscriptionPanel from '../components/SubscriptionPanel';
+import BrandLogo from '../components/BrandLogo';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [expenses, setExpenses] = useState([]);
   const [budgets, setBudgets] = useState([]);
   const [savings, setSavings] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
+  const [savingsLoaded, setSavingsLoaded] = useState(false);
+  const [bankOpeningLedger, setBankOpeningLedger] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [filterDate, setFilterDate] = useState('');
@@ -28,25 +34,37 @@ const Dashboard = () => {
     try {
       setLoading(true);
       // allSettled: if one request fails, the others still load
-      const [expenseRes, budgetRes, savingsRes] = await Promise.allSettled([
+      const results = await Promise.allSettled([
         expenseAPI.getAll(),
         budgetAPI.getAll(),
         savingAPI.getAll(),
+        subscriptionAPI.getAll(),
       ]);
+      const [expenseRes, budgetRes, savingsRes, subscriptionRes] = results;
 
       if (expenseRes.status === 'fulfilled') setExpenses(expenseRes.value.data);
       if (budgetRes.status === 'fulfilled') setBudgets(budgetRes.value.data);
-      if (savingsRes.status === 'fulfilled') setSavings(savingsRes.value.data);
+      if (savingsRes.status === 'fulfilled') {
+        setSavings(savingsRes.value.data);
+        setSavingsLoaded(true);
+      }
+      if (subscriptionRes.status === 'fulfilled') setSubscriptions(subscriptionRes.value.data);
 
-      [expenseRes, budgetRes, savingsRes].forEach((r) => {
+      const requestNames = ['expenses', 'budgets', 'savings', 'subscriptions'];
+      results.forEach((r, index) => {
         if (r.status === 'rejected') {
-          console.error('Fetch failed:', r.reason);
-          const status = r.reason?.response?.status;
-          if (status === 401 || status === 403) {
-            navigate('/login');
-          }
+          console.error(`Fetch failed for ${requestNames[index]}.`, {
+            status: r.reason?.response?.status ?? 'network error',
+            message: r.reason?.response?.data?.message ?? r.reason?.message,
+          });
         }
       });
+      const coreRequestsUnauthorized = results.slice(0, 3).every(
+        (result) =>
+          result.status === 'rejected'
+          && [401, 403].includes(result.reason?.response?.status)
+      );
+      if (coreRequestsUnauthorized) navigate('/login');
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -85,9 +103,72 @@ const Dashboard = () => {
     .reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
   
   const remaining = totalBudget - totalSpent - totalMovedToSavings;
-  const totalSavings = savings.reduce(
-    (sum, s) => sum + (s.type === 'WITHDRAWAL' ? -parseFloat(s.amount || 0) : parseFloat(s.amount || 0)),
-    0
+  const isOverBudget = remaining < 0;
+  const isLowBudget = !isOverBudget && totalBudget > 0 && remaining <= totalBudget * 0.2;
+  const budgetUsedPercent = totalBudget > 0
+    ? Math.min(100, Math.max(0, ((totalBudget - remaining) / totalBudget) * 100))
+    : isOverBudget ? 100 : 0;
+  const budgetStatusColor = isOverBudget
+    ? 'bg-red-500'
+    : isLowBudget
+      ? 'bg-amber-400'
+      : 'bg-emerald-500';
+  const budgetMessage = isOverBudget
+    ? `Over budget by ${formatCurrency(Math.abs(remaining))}. Review your spending.`
+    : totalBudget === 0
+      ? 'Set a budget to track your remaining balance.'
+      : isLowBudget
+        ? `Only ${formatCurrency(remaining)} remaining (${Math.max(0, 100 - budgetUsedPercent).toFixed(0)}% of budget).`
+        : `${budgetUsedPercent.toFixed(0)}% allocated to expenses and savings.`;
+  const rawBankBalances = useMemo(
+    () => SAVINGS_PRESETS
+      .filter((preset) => preset.type === 'BANK' || preset.type === 'MARIBANK')
+      .map((preset) => ({
+        ...preset,
+        balanceCents: savings
+          .filter((entry) => entry.destination === preset.name)
+          .reduce(
+            (total, entry) =>
+              total + (entry.type === 'WITHDRAWAL' ? -1 : 1) * Math.round(parseFloat(entry.amount || 0) * 100),
+            0
+          ),
+      })),
+    [savings]
+  );
+  const userId = localStorage.getItem('userId');
+  useEffect(() => {
+    if (!savingsLoaded) return;
+
+    const storageKey = `budget-tracker-bank-opening-ledger:${userId}`;
+    const savedLedger = localStorage.getItem(storageKey);
+    if (savedLedger !== null) {
+      const parsedLedger = JSON.parse(savedLedger);
+      if (!rawBankBalances.every((bank) => Number.isInteger(parsedLedger[bank.name]))) {
+        throw new Error('Saved bank balance baseline is invalid.');
+      }
+      setBankOpeningLedger(parsedLedger);
+      return;
+    }
+
+    const openingLedger = Object.fromEntries(
+      rawBankBalances.map((bank) => [bank.name, bank.balanceCents])
+    );
+    localStorage.setItem(storageKey, JSON.stringify(openingLedger));
+    setBankOpeningLedger(openingLedger);
+  }, [savingsLoaded, savings, rawBankBalances, userId]);
+
+  const openingBalancesCents = { Landbank: 42882, Maribank: 76840 };
+  const bankBalances = rawBankBalances.map((bank) => ({
+    ...bank,
+    balance: (
+      openingBalancesCents[bank.name]
+      + bank.balanceCents
+      - (bankOpeningLedger?.[bank.name] ?? bank.balanceCents)
+    ) / 100,
+  }));
+  const totalSavings = bankBalances.reduce((sum, bank) => sum + bank.balance, 0);
+  const savingsBalanceByDestination = Object.fromEntries(
+    bankBalances.map((bank) => [bank.name, bank.balance])
   );
 
   const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -117,12 +198,7 @@ const Dashboard = () => {
       <header className="border-b border-zinc-900 sticky top-0 z-10 bg-zinc-950/80 backdrop-blur">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-2.5 shadow-lg shadow-emerald-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
-            </div>
+            <BrandLogo className="h-11 w-11 rounded-xl shadow-lg shadow-emerald-500/20" />
             <div>
               <h1 className="text-xl font-bold tracking-tight">Budget Tracker</h1>
               <p className="text-zinc-500 text-sm">Welcome back, {userName}</p>
@@ -171,14 +247,43 @@ const Dashboard = () => {
           <>
         {/* Hero balance card */}
         <div className="glass-card rounded-3xl border p-4 sm:p-8 mb-5 sm:mb-6">
-          <p className="text-zinc-400 text-sm font-medium">Remaining</p>
-          <p
-            className={`text-3xl sm:text-5xl font-bold mt-1 tracking-tight break-words ${
-              remaining < 0 ? 'text-red-400' : 'text-emerald-400'
-            }`}
-          >
-            {formatCurrency(remaining)}
-          </p>
+          <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-8">
+            <div>
+              <p className="text-zinc-300 text-base font-semibold sm:text-lg">Remaining Balance</p>
+              <p
+                className={`mt-1 break-words text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl ${
+                  remaining < 0 ? 'text-red-400' : 'text-emerald-400'
+                }`}
+              >
+                {formatCurrency(remaining)}
+              </p>
+            </div>
+            <SubscriptionPanel
+              subscriptions={subscriptions}
+              onSubscriptionsChanged={fetchData}
+            />
+          </div>
+          <div className="mt-4" aria-label="Budget progress">
+            <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="font-medium text-zinc-400">Budget allocation</span>
+              <span className={isOverBudget ? 'font-semibold text-red-400' : isLowBudget ? 'font-semibold text-amber-300' : 'text-zinc-500'}>
+                {budgetMessage}
+              </span>
+            </div>
+            <div
+              className="h-2.5 overflow-hidden rounded-full bg-zinc-800"
+              role="progressbar"
+              aria-label="Budget allocated"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow={Math.round(budgetUsedPercent)}
+            >
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${budgetStatusColor}`}
+                style={{ width: `${budgetUsedPercent}%` }}
+              />
+            </div>
+          </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mt-5 sm:mt-6">
             <div className="glass-tile border rounded-2xl px-3 sm:px-4 py-3">
               <p className="text-zinc-500 text-xs font-medium">Total Budget</p>
@@ -227,7 +332,10 @@ const Dashboard = () => {
                 showExpenseForm ? 'max-h-[1200px] opacity-100 mt-5' : 'max-h-0 opacity-0'
               }`}
             >
-              <ExpenseForm onExpenseAdded={handleExpenseAdded} />
+              <ExpenseForm
+                onExpenseAdded={handleExpenseAdded}
+                savingsBalanceByDestination={savingsBalanceByDestination}
+              />
             </div>
           </div>
 
@@ -273,18 +381,39 @@ const Dashboard = () => {
           </>
         ) : activeView === 'savings' ? (
           <>
-            <div className="glass-card rounded-3xl border p-4 sm:p-8 mb-5 sm:mb-6 flex flex-wrap items-end justify-between gap-4 sm:gap-5">
-              <div>
-                <p className="text-zinc-400 text-sm font-medium">Total Savings</p>
-                <p className="text-3xl sm:text-5xl font-bold mt-1 tracking-tight text-blue-400 break-words">
-                  {formatCurrency(totalSavings)}
-                </p>
+            <div className="glass-card rounded-3xl border p-4 sm:p-8 mb-5 sm:mb-6 flex flex-wrap items-center justify-between gap-4 sm:gap-5">
+              <div className="min-w-0">
+                <div>
+                  <p className="text-zinc-400 text-sm font-medium">Total Savings</p>
+                  <p className="text-3xl sm:text-5xl font-bold mt-1 tracking-tight text-blue-400 break-words">
+                    {formatCurrency(totalSavings)}
+                  </p>
+                </div>
               </div>
-              <div className="glass-tile border rounded-2xl px-4 py-3 w-full sm:w-auto sm:min-w-[180px]">
-                <p className="text-zinc-500 text-xs font-medium">Available to save</p>
-                <p className={`text-lg font-bold mt-0.5 ${remaining < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-                  {formatCurrency(remaining)}
-                </p>
+              <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3 sm:gap-4">
+                <div className="flex w-full flex-wrap justify-end gap-2 sm:w-auto sm:gap-3">
+                  {bankBalances.map((bank) => (
+                    <div key={bank.name} className="glass-tile flex min-h-[90px] w-full items-center gap-3 rounded-2xl border px-4 py-4 sm:w-[225px]">
+                      <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${bank.gradient}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          {bank.icon}
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-zinc-400">{bank.name}</p>
+                        <p className={`text-base font-bold ${bank.balance < 0 ? 'text-red-400' : 'text-white'}`}>
+                          {formatCurrency(bank.balance)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="glass-tile flex min-h-[90px] w-full flex-col justify-center border rounded-2xl px-4 py-4 sm:w-[225px]">
+                  <p className="text-zinc-500 text-xs font-medium">Available to save</p>
+                  <p className={`text-lg font-bold mt-0.5 ${remaining < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                    {formatCurrency(remaining)}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -293,7 +422,7 @@ const Dashboard = () => {
                 <SavingsSection savings={savings} remaining={remaining} onSavingsChanged={fetchData} />
                 <SavingsWithdrawals savings={savings} onSavingsChanged={fetchData} />
               </div>
-              <div className="glass-card rounded-3xl border p-4 sm:p-6">
+              <div className="glass-card h-fit self-start rounded-3xl border p-4 sm:p-6">
                 <h2 className="text-lg font-bold mb-4 text-blue-400">Savings Trend</h2>
                 <SavingsChart savings={savings} />
               </div>

@@ -53,4 +53,12 @@ export const savingAPI = {
   delete: (id) => api.delete(`/savings/${id}`),
 };
 
+export const subscriptionAPI = {
+  create: (data) => api.post('/subscriptions', data),
+  getAll: () => api.get('/subscriptions'),
+  update: (id, data) => api.put(`/subscriptions/${id}`, data),
+  markPaid: (id) => api.post(`/subscriptions/${id}/paid`),
+  delete: (id) => api.delete(`/subscriptions/${id}`),
+};
+
 export default api;

@@ -146,7 +146,7 @@ const SavingsSection = ({ savings, remaining, onSavingsChanged }) => {
                 <option value="" disabled>Select destination</option>
                 {SAVINGS_PRESETS.map((p) => (
                   <option key={p.name} value={p.name}>
-                    {p.name} ({p.type === 'BANK' ? 'Bank' : 'E-wallet'})
+                    {p.name} ({p.type === 'EWALLET' ? 'E-wallet' : 'Bank'})
                   </option>
                 ))}
                 <option value="__custom__">+ Custom destination...</option>

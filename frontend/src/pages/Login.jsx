@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BrandLogo from '../components/BrandLogo';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../api/api';
 
@@ -49,12 +50,7 @@ const Login = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(500px,120vw)] h-[min(500px,120vw)] bg-emerald-500/10 rounded-full blur-3xl" />
       <div className="relative bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-800 p-5 sm:p-8 w-full max-w-md">
         <div className="flex justify-center mb-4">
-          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-3 shadow-lg shadow-emerald-500/20">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-          </div>
+          <BrandLogo className="h-14 w-14 rounded-2xl shadow-lg shadow-emerald-500/20" />
         </div>
         <h1 className="text-2xl font-bold text-white mb-1 text-center">Welcome back</h1>
         <p className="text-zinc-500 text-sm text-center mb-6">Log in to your Budget Tracker account</p>

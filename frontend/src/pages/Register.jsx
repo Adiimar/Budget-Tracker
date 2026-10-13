@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BrandLogo from '../components/BrandLogo';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../api/api';
 
@@ -46,6 +47,9 @@ const Register = () => {
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(500px,120vw)] h-[min(500px,120vw)] bg-emerald-500/10 rounded-full blur-3xl" />
       <div className="relative bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-800 p-5 sm:p-8 w-full max-w-md">
+        <div className="mb-4 flex justify-center">
+          <BrandLogo className="h-14 w-14 rounded-2xl shadow-lg shadow-emerald-500/20" />
+        </div>
         <h1 className="text-2xl font-bold text-white mb-1 text-center">Create Account</h1>
         <p className="text-zinc-500 text-sm text-center mb-6">Get started with your Budget Tracker</p>
         
