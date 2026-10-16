@@ -5,6 +5,7 @@ import { SAVINGS_PRESETS, getDestinationStyle } from '../utils/SavingsDestinatio
 
 const SavingsSection = ({ savings, remaining, onSavingsChanged }) => {
   const [showForm, setShowForm] = useState(false);
+  const [showAllDeposits, setShowAllDeposits] = useState(false);
   const [isCustomDestination, setIsCustomDestination] = useState(false);
   const [formData, setFormData] = useState({
     amount: '',
@@ -17,7 +18,10 @@ const SavingsSection = ({ savings, remaining, onSavingsChanged }) => {
   const [error, setError] = useState('');
 
   // Withdrawals (expenses paid from savings) are shown in their own card
-  const deposits = savings.filter((s) => s.type !== 'WITHDRAWAL');
+  const deposits = savings
+    .filter((s) => s.type !== 'WITHDRAWAL')
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  const recentDeposits = deposits.slice(0, 3);
 
   const inputClasses =
     'min-h-11 w-full min-w-0 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 text-sm transition-all';
@@ -97,7 +101,12 @@ const SavingsSection = ({ savings, remaining, onSavingsChanged }) => {
   return (
     <div className="glass-card rounded-3xl border p-4 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h2 className="text-lg font-bold">Savings</h2>
+        <div>
+          <h2 className="text-lg font-bold">Savings</h2>
+          <p className="text-zinc-500 text-sm mt-0.5">
+            Showing the latest {Math.min(deposits.length, 3)} of {deposits.length}
+          </p>
+        </div>
         {!showForm && (
           <button
             onClick={openForm}
@@ -234,7 +243,7 @@ const SavingsSection = ({ savings, remaining, onSavingsChanged }) => {
         </div>
       ) : (
         <div className="space-y-2.5">
-          {deposits.map((s) => {
+          {(showAllDeposits ? deposits : recentDeposits).map((s) => {
             const style = getDestinationStyle(s.destinationType);
             return (
               <div
@@ -269,6 +278,15 @@ const SavingsSection = ({ savings, remaining, onSavingsChanged }) => {
               </div>
             );
           })}
+          {deposits.length > 3 && (
+            <button
+              type="button"
+              onClick={() => setShowAllDeposits((showAll) => !showAll)}
+              className="w-full py-2 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
+            >
+              {showAllDeposits ? 'Show less' : `View all ${deposits.length} savings transactions`}
+            </button>
+          )}
         </div>
       )}
     </div>

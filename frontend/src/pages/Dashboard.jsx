@@ -208,8 +208,8 @@ const Dashboard = () => {
             <nav aria-label="Main navigation" className="grid w-full grid-cols-3 gap-1 rounded-xl border border-zinc-800 bg-zinc-900 p-1 sm:w-auto">
               {[
                 { id: 'dashboard', label: 'Dashboard' },
-                { id: 'transactions', label: 'Transactions' },
                 { id: 'savings', label: 'Savings' },
+                { id: 'transactions', label: 'Transactions' },
               ].map((item) => (
                 <button
                   key={item.id}
